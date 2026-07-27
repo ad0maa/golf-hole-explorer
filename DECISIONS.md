@@ -20,5 +20,14 @@ the acceptance criteria.
   `PCFSoftShadowMap`, which is R3F's default for `shadows`, and silently falls back to
   `PCFShadowMap` with a console warning. Naming `percentage` selects that same map explicitly:
   identical output, one less warning. Shadows are still on, as §6 requires.
+- **Repo:** https://github.com/ad0maa/golf-hole-explorer ·
+  **Live:** https://golf-hole-explorer.vercel.app
+- **Vercel is Git-connected, not CLI-deployed.** `vercel link` attached the project to the GitHub
+  repo, so pushes to `main` build production automatically and pull requests get preview
+  deployments. §9's `vercel --prod` would have created a project that deploys from local files
+  with no Git connection, which has to be linked up afterwards anyway.
+- **`GOLF-HOLE-EXPLORER-SPEC.md` and `docs/superpowers/` are gitignored.** They are working
+  documents; the repo is the portfolio artefact. This file carries the record of what was
+  ambiguous and how it was resolved.
 - **`typescript` / `@types/*` left as `latest`**, exactly as §2's dependency block specifies,
   rather than pinned to a resolved version.

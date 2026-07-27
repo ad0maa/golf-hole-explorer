@@ -18,6 +18,13 @@ body,
   background: #0d1b24;
 }
 
+/* dvh tracks the viewport when mobile browser chrome shows and hides; the 100% above is
+   the fallback for browsers without it. */
+html,
+body {
+  height: 100dvh;
+}
+
 canvas {
   display: block;
   touch-action: none;

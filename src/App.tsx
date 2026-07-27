@@ -17,6 +17,16 @@ export default function App() {
   return (
     <>
       <Canvas
+        // Pin the canvas container to the viewport instead of letting it inherit a height
+        // through html -> body -> #root. If any link in that percentage chain loses its
+        // height, the container sizes to its content — which is the canvas — while the
+        // canvas sizes to the container, so a stale size feeds back on itself and the view
+        // stays frozen at whatever dimensions it last had, parked in the top-left corner.
+        //
+        // This has to go through `style` rather than a CSS class: R3F writes
+        // `position: relative` as an inline style on this element and spreads the `style`
+        // prop last, so an external stylesheet silently loses to it.
+        style={{ position: 'fixed', inset: 0 }}
         dpr={[1, 2]}
         shadows="percentage"
         camera={{ position: [60, 90, 120], fov: 55, near: 0.5, far: 2000 }}

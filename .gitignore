@@ -30,3 +30,6 @@ dist-ssr
 GOLF-HOLE-EXPLORER-SPEC.md
 docs/superpowers/
 .env*
+
+# Playwright MCP scratch output
+.playwright-mcp/

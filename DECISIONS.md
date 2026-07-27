@@ -31,3 +31,43 @@ the acceptance criteria.
   ambiguous and how it was resolved.
 - **`typescript` / `@types/*` left as `latest`**, exactly as §2's dependency block specifies,
   rather than pinned to a resolved version.
+- **Favicon is an inline SVG data URI** in `index.html`. Without one the browser requests
+  `/favicon.ico` and logs a 404, and §2 forbids asset files — so it is drawn in markup like
+  everything else in the scene.
+
+## Phase 1
+
+- **Noise base period is 64m, not 16m.** The terrain grid is 201x201 vertices over a ~500m
+  hole, so vertices sit ~2.5m apart. With 4 octaves a 16m base puts the finest octave on a 2m
+  lattice — below the grid's Nyquist limit — and that detail aliases into faceted noise instead
+  of dunes. At 64m the finest octave is 8m, comfortably above twice the sample spacing.
+  Measured: max height change between adjacent vertices dropped from 0.517 to 0.164.
+- **Mown-grass colour boundaries are blended over a 3m band.** Surface classification is
+  per-vertex and binary, so switching colour on the flag stair-steps the fairway edge along
+  grid cells and reads as a bug. `classify()` stays binary — the blend only affects what you
+  see, never where the ball lies. Sand and water keep the hard edges §5.1 specifies.
+- **Hole 2's water is an irregular polygon**, not the axis-aligned rectangle it started as. A
+  rectangle reads as a swimming pool from above; the hole's character is a coastal inlet.
+- **`r3f-perf` was never installed.** §6 says use it in development then remove it before
+  shipping; §12 says prefer the hand-rolled version over a new dependency. `PerfMonitor.tsx`
+  reports draw calls, triangles, live geometries and fps into the leva panel §2 already
+  allocates for "a dev-only debug panel", using `renderer.info`. No dependency, nothing to
+  remove later.
+- **`PerfMonitor` samples on a 250ms timer, not in `useFrame`.** Frame callbacks stop when the
+  tab is backgrounded, freezing the readout; and on a hole switch the old geometry is disposed
+  immediately while the new one is not uploaded until the next render, so a frame-timed sample
+  can land in that gap and report zero geometries.
+- **`FrameHole` in `Scene.tsx` is a Phase 1 placeholder.** Holes range from 165m to 480m and no
+  single fixed camera frames them all. Phase 4 replaces it with `CameraRig`.
+- **One console warning remains:** `THREE.Clock has been deprecated`, emitted from inside
+  @react-three/fiber 9.6.1 against three 0.185. Not ours, and not fixable without patching R3F
+  or moving off the pinned versions.
+
+### Phase 1 measurements
+
+- Terrain build: **69ms / 57ms / 52ms** for holes 1-3 (budget was 250ms)
+- 40,401 vertices, 80,000 triangles per hole, one `BufferGeometry`, Uint32 index buffer
+- **2 draw calls, 160,000 triangles rendered** (80k twice: shadow pass + main pass)
+- **60fps** at 1200x1223
+- **No geometry leak:** `renderer.info.memory.geometries` held at exactly 1 across 30 hole
+  switches

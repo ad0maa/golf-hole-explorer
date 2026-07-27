@@ -121,14 +121,23 @@ export const HOLES: HoleDefinition[] = [
         depth: 1.8,
       },
     ],
-    // All carry: one wide hazard between tee and green.
+    // All carry: one wide inlet between tee and green. Deliberately irregular — a
+    // rectangle reads as a swimming pool from above.
     water: [
       {
         polygon: [
-          [-70, -28],
-          [70, -28],
-          [70, -126],
-          [-70, -126],
+          [-70, -34],
+          [-44, -29],
+          [-16, -33],
+          [12, -27],
+          [40, -32],
+          [70, -26],
+          [70, -120],
+          [46, -128],
+          [18, -121],
+          [-10, -130],
+          [-38, -122],
+          [-70, -129],
         ],
       },
     ],

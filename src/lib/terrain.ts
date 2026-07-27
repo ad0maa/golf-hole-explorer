@@ -115,6 +115,7 @@ export function buildTerrain(hole: HoleDefinition): TerrainData {
   const surfaces = new Uint8Array(vertexCount)
 
   const colour = new THREE.Color()
+  const blend = new THREE.Color()
 
   for (let iz = 0; iz < COLS; iz++) {
     const z = bounds.minZ + (iz / GRID) * spanZ
@@ -168,9 +169,22 @@ export function buildTerrain(hole: HoleDefinition): TerrainData {
       // 3. Vertex colour from surface, with seeded brightness jitter.
       // new THREE.Color(hex) reads the hex as sRGB and converts into the renderer's
       // working colour space, so these are the literal palette values.
-      colour.set(SURFACE_COLOUR[surface])
-      const jitter = SURFACE_JITTER[surface]
-      if (jitter > 0) colour.multiplyScalar(1 + (rng() * 2 - 1) * jitter)
+      //
+      // The mown-grass boundaries are blended over a 3m band rather than snapped to the
+      // surface flag. Classification is per-vertex and binary, so a hard colour switch
+      // stair-steps along the ~2.5m grid cells and reads as an artifact. `classify` above
+      // stays binary — this only changes what you see, not where the ball lies.
+      // Sand and water keep their hard edges, as specified.
+      if (surface === 'sand' || surface === 'water') {
+        colour.set(SURFACE_COLOUR[surface])
+      } else {
+        const roughMix = smoothstep(halfWidth - 1.5, halfWidth + 1.5, hit.distance)
+        colour.set(SURFACE_COLOUR.fairway).lerp(blend.set(SURFACE_COLOUR.rough), roughMix)
+        const greenMix = smoothstep(hole.greenRadius + 1.5, hole.greenRadius - 1.5, distToPin)
+        if (greenMix > 0) colour.lerp(blend.set(SURFACE_COLOUR.green), greenMix)
+        const jitter = lerp(SURFACE_JITTER.fairway, SURFACE_JITTER.rough, roughMix) * (1 - greenMix)
+        if (jitter > 0) colour.multiplyScalar(1 + (rng() * 2 - 1) * jitter)
+      }
       colours[i * 3 + 0] = colour.r
       colours[i * 3 + 1] = colour.g
       colours[i * 3 + 2] = colour.b

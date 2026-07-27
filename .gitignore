@@ -29,3 +29,4 @@ dist-ssr
 # Working documents — kept local, not part of the portfolio artefact.
 GOLF-HOLE-EXPLORER-SPEC.md
 docs/superpowers/
+.env*

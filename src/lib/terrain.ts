@@ -72,9 +72,12 @@ function boundsFor(hole: HoleDefinition): Bounds {
     if (z > maxZ) maxZ = z
   }
 
+  // Bounds are driven by the playable hole only. Water polygons are deliberately excluded
+  // so a hazard can be authored wider than the terrain and run clean off both edges — if
+  // water expanded the bounds, the terrain would always outlast it and the hazard would
+  // end mid-map in a straight cliff.
   for (const p of hole.centreline) include(p[0], p[2])
   for (const b of hole.bunkers) for (const p of b.polygon) include(p[0], p[1])
-  for (const w of hole.water) for (const p of w.polygon) include(p[0], p[1])
 
   const pin = pinOf(hole)
   include(pin[0] - hole.greenRadius, pin[2] - hole.greenRadius)
@@ -106,6 +109,8 @@ export function buildTerrain(hole: HoleDefinition): TerrainData {
   const pinY = pin[1]
   const halfWidth = hole.fairwayWidth / 2
   const rng = mulberry32(hole.seed)
+  const hasWater = hole.water.length > 0
+  const minLandY = hole.waterLevel + 0.4
 
   const vertexCount = COLS * COLS
   const positions = new Float32Array(vertexCount * 3)
@@ -159,6 +164,11 @@ export function buildTerrain(hole: HoleDefinition): TerrainData {
           break
         }
       }
+
+      // Land must never sit below the water plane. Rough noise swings several metres, and
+      // where it dips under the waterline outside the hazard the water plane's edge shows
+      // through as a floating wall with a hard straight shadow.
+      if (hasWater && surface !== 'water' && y < minLandY) y = minLandY
 
       positions[i * 3 + 0] = x
       positions[i * 3 + 1] = y

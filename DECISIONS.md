@@ -63,6 +63,34 @@ the acceptance criteria.
   @react-three/fiber 9.6.1 against three 0.185. Not ours, and not fixable without patching R3F
   or moving off the pinned versions.
 
+## Phase 2
+
+- **Water is a flat translucent surface, not a shader ripple.** §8 Phase 2 explicitly permits
+  this, and it keeps water to one draw call and zero shader code.
+- **Water geometry is built from the hole's polygons via `THREE.Shape` + `ShapeGeometry`**, not
+  from their bounding box. A bbox plane overhangs the irregular shoreline, floats above the
+  land and casts a straight-edged shadow that gives the whole trick away. `ShapeGeometry`
+  triangulates with the earcut implementation already inside three, so no new dependency.
+- **Water polygons no longer expand the terrain bounds** (`boundsFor` in `terrain.ts`). They
+  used to, which meant the terrain always outlasted the hazard by the 45m margin and the water
+  ended mid-map in a straight cliff. Hazards are now authored wider than the terrain and run
+  cleanly off both edges; the water geometry is clamped back to the terrain bounds so it does
+  not hang past the map into open sky.
+- **Land is clamped to `waterLevel + 0.4`** on holes with water. Rough noise swings several
+  metres and dipped below the waterline outside the hazard, exposing the water surface as a
+  floating sheet over dry ground.
+- **The flag waves by rotating the flag group** in `useFrame`, not by displacing vertices —
+  §8 says not to write a custom shader unless there is time.
+- **Ball radius is 0.6m**, not the real 21mm: a true-scale ball is sub-pixel at these camera
+  distances.
+
+### Phase 2 measurements
+
+- **10-15 draw calls**, 176k-184k triangles rendered, **60fps**
+- **7 geometries** on holes 1 and 3, **8** on hole 2 (which adds water) — stable across 24
+  hole switches, so the Phase 1 disposal guarantee still holds with the dressing added
+- ~300 of 400 candidate trees survive rejection sampling, drawn in **2 draw calls**
+
 ### Phase 1 measurements
 
 - Terrain build: **69ms / 57ms / 52ms** for holes 1-3 (budget was 250ms)

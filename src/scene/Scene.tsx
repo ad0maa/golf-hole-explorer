@@ -6,8 +6,12 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { HOLES } from '../data/holes'
 import { buildTerrain, type TerrainData } from '../lib/terrain'
 import { useStore } from '../store'
+import { Ball } from './Ball'
 import { PerfMonitor } from './PerfMonitor'
+import { Pin } from './Pin'
 import { Terrain } from './Terrain'
+import { Trees } from './Trees'
+import { Water } from './Water'
 
 /**
  * Placeholder framing so every hole is viewable in Phase 1 — holes range from 165m to
@@ -78,6 +82,10 @@ export function Scene() {
       />
 
       <Terrain terrain={terrain} />
+      <Water hole={hole} terrain={terrain} />
+      <Trees hole={hole} terrain={terrain} />
+      <Pin hole={hole} terrain={terrain} />
+      <Ball terrain={terrain} />
       <FrameHole terrain={terrain} />
       {import.meta.env.DEV && <PerfMonitor />}
     </>

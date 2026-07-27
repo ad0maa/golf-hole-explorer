@@ -154,6 +154,45 @@ canvas {
   font-size: 11px;
 }
 
+.panel-br {
+  bottom: 16px;
+  right: 16px;
+}
+
+.cams {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cam {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef4f7;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cam:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cam-on {
+  background: #76a94f;
+  border-color: #9ccb72;
+  color: #10200c;
+}
+
+.cam-on .dim {
+  opacity: 0.85;
+}
+
 /* Anchored to a world position by drei's <Html>, but rendered in screen space. */
 .reticle-label {
   padding: 3px 8px;

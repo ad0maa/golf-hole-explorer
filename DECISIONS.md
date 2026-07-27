@@ -109,6 +109,42 @@ the acceptance criteria.
 - **Dev-only `window.gl`, `window.camera` and `window.store` handles**, all stripped from
   production builds. They are what made the `<Html>` diagnosis possible.
 
+## Phase 4
+
+- **Snap-back to orbit waits for a drag, not any pointerdown.** §5.6 says a `pointerdown` or
+  `wheel` in a preset mode should hand control back to orbit — but `pointerdown` is also how a
+  shot is played, so taken literally every swing kicks the player out of Tee view. A drag is the
+  gesture that means "I want the camera"; a click means "hit the ball". The listener now waits
+  for 6px of pointer travel before escaping, and a wheel still escapes immediately. Verified:
+  clicking in Tee view plays the shot and stays in Tee; dragging or scrolling returns to orbit.
+- **Tee camera sits 16m back at 5.5m up, not the spec's 8m/6m.** At 8m back with the camera
+  looking at a pin hundreds of metres away, the ball falls ~35 degrees below the view axis —
+  outside the 55 degree vertical FOV — so the player cannot see their own ball. 16m keeps the
+  over-the-shoulder framing and lifts the ball clear of the club picker, which occupies the same
+  bottom-centre screen space.
+- **Overhead height is derived from the FOV**, `span / 2 / tan(fov/2)`, not guessed as a multiple
+  of the hole span. Fitting a ~460m hole at 20 degrees needs about 1300m of altitude; a guessed
+  multiple left most of the hole off-screen.
+- **Overhead pushes the fog out of range.** Two spec requirements collide: fog at 400-700m (§8)
+  and an overhead plan view at ~20 degrees FOV (§5.6). At the altitude needed to frame a hole,
+  the entire course sits beyond the fog far plane and renders as flat background colour. The fog
+  planes are damped out to 3000/9000 in Overhead and back on exit. A plan view has no use for
+  atmospheric depth; the ground-level modes keep it.
+- **FOV is restored in orbit mode too.** The first version returned early for `orbit` before the
+  FOV damping ran, so leaving Overhead for Orbit stranded the camera at 20 degrees with no way
+  to widen it again.
+- **Camera keys are derived from the same table the buttons render** (`CAMERA_MODES`), so the
+  shortcuts and the UI cannot drift apart.
+
+### Phase 4 measurements
+
+- **Zero jitter in every preset:** max camera movement between consecutive frames measured at
+  **0.00000** units once settled, for Tee, Green and Overhead
+- Flyover traverses the hole (z −58 → −361, rising 14→19m with the terrain) and hands back to
+  orbit on schedule
+- Overhead: 1461m altitude, 20 degree FOV, whole hole framed; FOV restores to 55 on exit
+- All five camera keys (T G O R F) and all six club keys verified
+
 ### Phase 3 measurements
 
 - **14 draw calls, 180k triangles, 10 geometries** while aiming (arc line, landing ring and

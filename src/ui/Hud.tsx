@@ -1,9 +1,16 @@
 import { useEffect } from 'react'
 import { CLUBS } from '../data/clubs'
 import { HOLES, pinOf } from '../data/holes'
+import type { CameraMode } from '../store'
 import { useStore } from '../store'
+import { CameraButtons, CAMERA_MODES } from './CameraButtons'
 import { ClubPicker } from './ClubPicker'
 import { HoleTabs } from './HoleTabs'
+
+/** Keyed off the same table the buttons render, so the two can never drift apart. */
+const CAMERA_KEYS: Record<string, CameraMode> = Object.fromEntries(
+  CAMERA_MODES.map((m) => [m.key.toLowerCase(), m.mode]),
+)
 
 function useKeyboardShortcuts() {
   useEffect(() => {
@@ -12,7 +19,10 @@ function useKeyboardShortcuts() {
       const digit = Number(e.key)
       if (Number.isInteger(digit) && digit >= 1 && digit <= CLUBS.length) {
         useStore.getState().setClub(CLUBS[digit - 1].id)
+        return
       }
+      const mode = CAMERA_KEYS[e.key.toLowerCase()]
+      if (mode) useStore.getState().setCamera(mode)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -42,6 +52,7 @@ export function Hud() {
       <HoleTabs />
       <Scorecard />
       <ClubPicker />
+      <CameraButtons />
     </div>
   )
 }

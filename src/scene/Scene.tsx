@@ -1,46 +1,16 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { OrbitControls } from '@react-three/drei'
-import { useThree } from '@react-three/fiber'
-import * as THREE from 'three'
-import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
+import { useEffect, useMemo } from 'react'
 import { HOLES } from '../data/holes'
-import { buildTerrain, type TerrainData } from '../lib/terrain'
+import { buildTerrain } from '../lib/terrain'
 import { useStore } from '../store'
 import { AimReticle } from './AimReticle'
 import { Ball } from './Ball'
+import { CameraRig } from './CameraRig'
 import { PerfMonitor } from './PerfMonitor'
 import { Pin } from './Pin'
 import { ShotArc } from './ShotArc'
 import { Terrain } from './Terrain'
 import { Trees } from './Trees'
 import { Water } from './Water'
-
-/**
- * Placeholder framing so every hole is viewable in Phase 1 — holes range from 165m to
- * 480m, and one fixed camera cannot frame them all. Phase 4 replaces this entirely with
- * CameraRig and its five modes.
- */
-function FrameHole({ terrain }: { terrain: TerrainData }) {
-  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera
-  const controls = useRef<OrbitControlsImpl>(null)
-
-  useEffect(() => {
-    const { bounds } = terrain
-    const cx = (bounds.minX + bounds.maxX) / 2
-    const cz = (bounds.minZ + bounds.maxZ) / 2
-    const span = Math.max(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ)
-    // Pull back far enough that `span` fits the vertical FOV, then come in closer and
-    // lower: the spec's 400-700m fog is tuned for a tee-level camera, and a full overview
-    // sits far enough away to wash the green out entirely.
-    const dist = span / 2 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-    camera.position.set(cx + span * 0.15, dist * 0.42, cz + dist * 0.52)
-    camera.updateProjectionMatrix()
-    controls.current?.target.set(cx, 0, cz)
-    controls.current?.update()
-  }, [terrain, camera])
-
-  return <OrbitControls ref={controls} enableDamping dampingFactor={0.08} maxDistance={1500} />
-}
 
 export function Scene() {
   const holeIndex = useStore((s) => s.holeIndex)
@@ -90,7 +60,7 @@ export function Scene() {
       <Ball terrain={terrain} />
       <ShotArc terrain={terrain} />
       <AimReticle terrain={terrain} />
-      <FrameHole terrain={terrain} />
+      <CameraRig terrain={terrain} />
       {import.meta.env.DEV && <PerfMonitor />}
     </>
   )

@@ -159,6 +159,96 @@ canvas {
   right: 16px;
 }
 
+.panel-tr {
+  top: 16px;
+  right: 16px;
+}
+
+.wind-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.wind-text {
+  line-height: 1.25;
+}
+
+.wind-cap {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-hint {
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hint-x {
+  border: none;
+  background: transparent;
+  color: #eef4f7;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  opacity: 0.6;
+}
+
+.hint-x:hover {
+  opacity: 1;
+}
+
+.banner {
+  position: absolute;
+  pointer-events: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 38px;
+  border-radius: 14px;
+  background: rgba(12, 22, 30, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #eef4f7;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.banner-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.banner-sub {
+  font-size: 12px;
+}
+
+.banner-btn {
+  margin-top: 4px;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #9ccb72;
+  background: #76a94f;
+  color: #10200c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.banner-btn:hover {
+  background: #86bb5b;
+}
+
 .cams {
   display: flex;
   flex-direction: column;

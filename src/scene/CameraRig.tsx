@@ -159,13 +159,15 @@ export function CameraRig({ terrain }: { terrain: TerrainData }) {
       //
       // The spec's 8m setback at 6m up puts the ball ~35 degrees below the view axis while
       // the camera looks at a pin hundreds of metres away — outside the 55 degree vertical
-      // FOV, so the player cannot see their own ball. 16m back at 5.5m up keeps the same
+      // FOV, so the player cannot see their own ball. 19m back at 5.5m up keeps the same
       // over-the-shoulder framing and lifts the ball clear of the club picker, which sits
-      // bottom-centre in the same part of the screen.
+      // bottom-centre in the same part of the screen. The extra setback is for short
+      // viewports: the ball's position is in NDC but the HUD is in pixels, so a 630px-tall
+      // window pinches the two together while a 720px one does not.
       scratchA.set(pin[0] - ballPos[0], 0, pin[2] - ballPos[2])
       if (scratchA.lengthSq() < 1e-6) scratchA.set(0, 0, -1)
       scratchA.normalize()
-      targetPos.set(ballPos[0] - scratchA.x * 16, ballY + 5.5, ballPos[2] - scratchA.z * 16)
+      targetPos.set(ballPos[0] - scratchA.x * 19, ballY + 5.5, ballPos[2] - scratchA.z * 19)
       targetLook.set(pin[0], pin[1] + 1, pin[2])
     } else if (mode === 'green') {
       // 40m short of the pin along the hole's axis, 18m up.

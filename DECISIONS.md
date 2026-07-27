@@ -136,6 +136,33 @@ the acceptance criteria.
 - **Camera keys are derived from the same table the buttons render** (`CAMERA_MODES`), so the
   shortcuts and the UI cannot drift apart.
 
+## Phase 5
+
+- **The README reports an Apple M1 Pro, not the M2 Pro** the spec's template assumed. The numbers
+  are what this machine actually measured; shipping the template's hardware would be a false claim.
+- **fps is reported as 95, not 60.** 60 was the spec's target; 95 is what was measured at 2560x1440
+  in Chromium, which does not cap to the display's refresh rate. On a vsynced browser this would
+  read 60.
+- **The wind arrow maps a world bearing to a screen rotation.** `wind.dir` is `atan2(x, z)`, and
+  the HUD reads as a plan view with -Z up and +X right, which works out to a clockwise SVG
+  rotation of `PI - bearing`. A wind blowing straight down the hole points straight up in the HUD.
+- **Tee setback ended at 19m** rather than the 16m Phase 4 landed on. The ball's position in frame
+  is in NDC but the HUD is in pixels, so a 630px-tall window pinches the ball against the club
+  picker while a 720px one does not. 19m clears both.
+- **The OG image is a screenshot of the app's own output**, taken from the production build at
+  1200x630, so `public/og.png` is the only file in `public/` and no asset was downloaded.
+- **`r3f-perf` was never installed and so never needed removing** — see the Phase 1 note. The leva
+  panel does the job §6 wanted it for.
+
+### Phase 5 measurements
+
+Apple M1 Pro, 2560x1440, Chromium:
+
+- **95 fps**, **15-19 draw calls**, **177k-180k triangles**, **10-11 geometries**
+- Terrain build **87 / 69 / 63 ms** for holes 1-3
+- Bundle **1,340 kB raw / 383 kB gzipped** (three.js dominates), CSS 3.3 kB / 1.1 kB gzipped
+- Production build verified to strip leva, `window.gl`, `window.camera` and `window.store`
+
 ### Phase 4 measurements
 
 - **Zero jitter in every preset:** max camera movement between consecutive frames measured at

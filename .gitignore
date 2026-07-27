@@ -29,6 +29,7 @@ dist-ssr
 # Working documents — kept local, not part of the portfolio artefact.
 GOLF-HOLE-EXPLORER-SPEC.md
 docs/superpowers/
+INTERVIEW-NOTES.md
 .env*
 
 # Playwright MCP scratch output

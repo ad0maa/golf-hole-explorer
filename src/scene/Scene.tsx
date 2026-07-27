@@ -6,9 +6,11 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { HOLES } from '../data/holes'
 import { buildTerrain, type TerrainData } from '../lib/terrain'
 import { useStore } from '../store'
+import { AimReticle } from './AimReticle'
 import { Ball } from './Ball'
 import { PerfMonitor } from './PerfMonitor'
 import { Pin } from './Pin'
+import { ShotArc } from './ShotArc'
 import { Terrain } from './Terrain'
 import { Trees } from './Trees'
 import { Water } from './Water'
@@ -86,6 +88,8 @@ export function Scene() {
       <Trees hole={hole} terrain={terrain} />
       <Pin hole={hole} terrain={terrain} />
       <Ball terrain={terrain} />
+      <ShotArc terrain={terrain} />
+      <AimReticle terrain={terrain} />
       <FrameHole terrain={terrain} />
       {import.meta.env.DEV && <PerfMonitor />}
     </>

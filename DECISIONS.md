@@ -84,6 +84,41 @@ the acceptance criteria.
 - **Ball radius is 0.6m**, not the real 21mm: a true-scale ball is sub-pixel at these camera
   distances.
 
+## Phase 3
+
+- **`<Html>` needs `style={{ pointerEvents: 'none' }}`, and this is load-bearing.** drei renders
+  `<Html>` into a wrapper div layered over the canvas, and that wrapper accepts pointer events by
+  default. Once the reticle label appeared it sat over the cursor and swallowed every click:
+  R3F never saw the event, `onClick` never fired, and shots silently did not happen while aiming
+  still worked perfectly. Setting `pointer-events: none` on the inner `.reticle-label` is not
+  enough — the wrapper is a separate element.
+- **`occlude` dropped from `<Html>`.** §5.4 asks for `<Html occlude transform={false} />`;
+  `occlude` makes drei raycast the label against scene meshes every frame, which costs more than
+  it gives on a label that has to stay readable. Kept `transform={false}`.
+- **`shotSeq` added to the store.** The spec's `State` has no shot trigger. A monotonically
+  increasing counter bumped by a terrain click is the smallest thing that lets `Ball.tsx` start a
+  flight without putting a three.js object in the store. `requestShot` refuses to bump it while
+  `flying` or `holedOut`, which is how §5.7's "ignore pointer clicks entirely while flying" is
+  enforced in one place.
+- **Shot arcs are computed ground-to-ground**, with the ball radius added at render time.
+  `shotArc` snaps its landing to terrain height, so starting the arc at ball-centre height left
+  the ball half-buried on impact and popped it up a radius when it settled.
+- **A putt's final sample keeps its ground clearance.** Every putt point sits `PUTT_LIFT` above
+  the green, but the last sample was being overwritten with the raw landing point at ground
+  level, so the putt line dipped into the surface right at the cup.
+- **Dev-only `window.gl`, `window.camera` and `window.store` handles**, all stripped from
+  production builds. They are what made the `<Html>` diagnosis possible.
+
+### Phase 3 measurements
+
+- **14 draw calls, 180k triangles, 10 geometries** while aiming (arc line, landing ring and
+  reticle ring on top of the scene's 7), 60fps+
+- **No leak while aiming:** geometries held at 10 across 120 cursor moves, each rebuilding the
+  preview arc, and fell back to 7 when the pointer left the terrain
+- Verified end to end: club clamping (a driver aimed at 276m carries exactly its 235m), water
+  penalty (stroke + penalty, ball returned to origin), hole-out inside 1m, and mid-flight clicks
+  ignored
+
 ### Phase 2 measurements
 
 - **10-15 draw calls**, 176k-184k triangles rendered, **60fps**

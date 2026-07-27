@@ -8,6 +8,8 @@ declare global {
   interface Window {
     /** Dev-only handle on the renderer, for reading `gl.info` from the console. */
     gl?: THREE.WebGLRenderer
+    /** Dev-only handle on the default camera, for projecting world points to screen. */
+    camera?: THREE.Camera
   }
 }
 
@@ -21,8 +23,11 @@ export default function App() {
         // Stands in for r3f-perf: `gl.info.render` gives draw calls and triangle counts,
         // and `gl.info.memory` proves geometries are disposed on hole switch. Dev only,
         // so it is stripped from the production bundle.
-        onCreated={({ gl }) => {
-          if (import.meta.env.DEV) window.gl = gl
+        onCreated={({ gl, camera }) => {
+          if (import.meta.env.DEV) {
+            window.gl = gl
+            window.camera = camera
+          }
         }}
       >
         <Scene />

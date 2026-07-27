@@ -44,6 +44,13 @@ type State = {
   dismissHint: () => void
 }
 
+declare global {
+  interface Window {
+    /** Dev-only handle for inspecting game state from the console. */
+    store?: typeof useStore
+  }
+}
+
 /** Y is a placeholder; Ball.tsx snaps it to sampleHeight once the terrain exists. */
 const teeStart = (holeIndex: number): [number, number, number] => teeOf(HOLES[holeIndex])
 
@@ -93,3 +100,5 @@ export const useStore = create<State>((set) => ({
     })),
   dismissHint: () => set({ hintVisible: false }),
 }))
+
+if (import.meta.env.DEV) window.store = useStore

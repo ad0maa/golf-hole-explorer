@@ -94,3 +94,75 @@ canvas {
   font-size: 15px;
   font-weight: 600;
 }
+
+.panel-bl {
+  bottom: 16px;
+  left: 16px;
+}
+
+.panel-bc {
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.clubs {
+  display: flex;
+  gap: 6px;
+}
+
+.club {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 92px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef4f7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.club:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.club-on {
+  background: #76a94f;
+  border-color: #9ccb72;
+  color: #10200c;
+}
+
+.club-on .dim {
+  opacity: 0.85;
+}
+
+.club-key {
+  font-size: 10px;
+  opacity: 0.55;
+}
+
+.club-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.club-carry {
+  font-size: 11px;
+}
+
+/* Anchored to a world position by drei's <Html>, but rendered in screen space. */
+.reticle-label {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(12, 22, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #eef4f7;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
